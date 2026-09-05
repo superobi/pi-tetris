@@ -1,0 +1,23 @@
+{
+  "name": "pi-tetris",
+  "version": "1.0.0",
+  "description": "Tetris overlay for the pi coding agent. Play while the model works.",
+  "license": "MIT",
+  "author": "Antoine (@superobi)",
+  "repository": { "type": "git", "url": "git+https://github.com/superobi/pi-tetris.git" },
+  "homepage": "https://github.com/superobi/pi-tetris#readme",
+  "type": "module",
+  "keywords": ["pi-package", "pi", "extension", "tetris", "game"],
+  "engines": { "node": ">=22.19.0" },
+  "files": ["extensions", "README.md", "LICENSE"],
+  "scripts": {
+    "test": "node --disable-warning=ExperimentalWarning --test tests/*.test.ts"
+  },
+  "pi": {
+    "extensions": ["./extensions/tetris/index.ts"]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*"
+  }
+}
