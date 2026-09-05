@@ -1,13 +1,12 @@
 # pi-tetris
 
-Tetris in a pi overlay, playable while the agent works. Two TypeScript files, no
-runtime dependencies, no build step. It uses pi's own terminal UI and keyboard
-parser.
+Play Tetris in your terminal while pi works. Open it with `/tetris` and return
+to your conversation whenever you're ready.
 
 ## Install
 
 ```sh
-pi install git:github.com/superobi/pi-tetris@v1.0.0
+pi install git:github.com/superobi/pi-tetris@v1.0.1
 ```
 
 Run `/reload` in an open session, or start a new one. Then type `/tetris`.
@@ -42,29 +41,25 @@ shows "Pi finished".
 C and V work with ordinary terminal input, including through tmux. Ctrl+C closes
 the overlay.
 
-## Behavior
+## Features
 
-- Seven-piece shuffle bag, beveled bricks, bordered next-piece preview, landing
-  ghost, and basic wall and floor kicks. Texture is terminal characters only, so
-  there are no image assets.
-- Ten cleared lines advance a level. Gravity accelerates from 800 ms per row to a
-  minimum of 80 ms. One to four line clears earn 100/300/500/800 points times the
-  level. Soft and hard drops earn 1 and 2 points per row.
-- Landing starts a 500 ms lock delay so you can slide or rotate into place.
-  Moves and rotations while grounded refresh it, up to 5 times per piece.
-- Completed rows blink for 100 ms. Four-line clears hold for 300 ms with a
-  brighter highlight, a blinking border, "TETRIS!", and columns erased from the
-  center outward. The agent stays responsive throughout.
-- The full layout needs 42 columns by 25 rows. Smaller terminals switch to
-  half-block cells, down to 32 by 15. Below that the game pauses until you resize
-  and press P.
-- One timeout drives gravity, locking, and the clear animation. Pausing, closing,
-  restarting, and session shutdown cancel it. Unchanged frames are cached while
-  the model streams output.
-- Progress lasts for the current session. Restarting pi, switching sessions, or
-  reloading extensions clears it. Game state never enters the model's context.
+- **Play while pi works.** The game pauses when the agent finishes, so you know
+  your response is ready.
+- **Plan your next move.** See the next piece and an outline of where your
+  current piece will land.
+- **Chase a higher score.** Clear lines to level up as the pieces fall faster.
+- **Colorful terminal graphics.** Shaded bricks and flashing line clears, with
+  a special animation for clearing four lines at once.
+- **Pause and come back.** Return to your conversation, then reopen `/tetris`
+  to resume your game.
+- **Fits smaller terminals.** The board switches to a compact layout when
+  space is tight.
 
-Gameplay tuning lives at the top of `extensions/tetris/game.ts`.
+### Before you play
+
+The game needs at least 32 columns by 15 rows. Progress lasts only for the
+current pi session: restarting pi, switching sessions, or running `/reload`
+clears it. There are no saved games between sessions.
 
 ## Tests
 
