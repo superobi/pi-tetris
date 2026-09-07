@@ -6,7 +6,7 @@ to your conversation whenever you're ready.
 ## Install
 
 ```sh
-pi install git:github.com/superobi/pi-tetris@v1.0.1
+pi install git:github.com/superobi/pi-tetris@v1.0.2
 ```
 
 Run `/reload` in an open session, or start a new one. Then type `/tetris`.
@@ -61,9 +61,16 @@ The game needs at least 32 columns by 15 rows. Progress lasts only for the
 current pi session: restarting pi, switching sessions, or running `/reload`
 clears it. There are no saved games between sessions.
 
-## Tests
+## Contributing
+
+This branch (`main`) carries only the extension itself, so `pi install` and
+`pi -e` stay small. Tests, `package-lock.json`, and tuning notes live on
+[`develop`](https://github.com/superobi/pi-tetris/tree/develop):
 
 ```sh
+git clone https://github.com/superobi/pi-tetris.git
+cd pi-tetris
+git checkout develop
 npm test
 ```
 
