@@ -1,6 +1,6 @@
 {
   "name": "pi-tetris",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Tetris overlay for the pi coding agent. Play while the model works.",
   "license": "MIT",
   "author": "Antoine (@superobi)",

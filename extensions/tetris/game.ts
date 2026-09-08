@@ -34,7 +34,7 @@ const KICKS: Point[] = [[0, 0], [-1, 0], [1, 0], [-2, 0], [2, 0], [0, -1], [0, -
 
 // Gameplay tuning. Tests use these settings without pinning their chosen values.
 export const LINE_POINTS: readonly number[] = [0, 100, 300, 500, 800];
-export const BASE_GRAVITY_MS: number = 800;
+export const BASE_GRAVITY_MS: number = 1200;
 export const GRAVITY_DECAY: number = 0.8;
 export const MIN_GRAVITY_MS: number = 80;
 export const CLEAR_FLASH_MS: number = 100;
@@ -47,42 +47,61 @@ export class Game {
   readonly board = new Uint8Array(WIDTH * HEIGHT);
   active!: Piece;
   next: number;
+  held?: number;
+  holdUsed = false;
   score = 0;
   lines = 0;
+  tetrises = 0;
   locked = 0;
   over = false;
   lastClear?: LineClear;
-  private bag: number[] = [];
+  private previous = -1;
   private readonly random: () => number;
 
-  constructor(random: () => number = Math.random) {
+  readonly startLevel: number;
+
+  constructor(random: () => number = Math.random, startLevel = 0) {
+    if (!Number.isInteger(startLevel) || startLevel < 0 || startLevel > 9) {
+      throw new RangeError("Starting level must be an integer from 0 to 9.");
+    }
+    this.startLevel = startLevel;
     this.random = random;
     this.next = this.draw();
     this.spawn();
   }
 
-  get level(): number { return 1 + Math.floor(this.lines / 10); }
+  get tetrisPercent(): number { return this.lines === 0 ? 0 : 100 * (4 * this.tetrises) / this.lines; }
+  get level(): number { return this.startLevel + Math.floor(this.lines / 10); }
   get gravityMs(): number {
-    return Math.max(MIN_GRAVITY_MS, Math.round(BASE_GRAVITY_MS * GRAVITY_DECAY ** (this.level - 1)));
+    return Math.max(MIN_GRAVITY_MS, Math.round(BASE_GRAVITY_MS * GRAVITY_DECAY ** this.level));
   }
   get grounded(): boolean { return !this.fits({ ...this.active, y: this.active.y + 1 }); }
 
   private draw(): number {
-    if (!this.bag.length) {
-      this.bag = NAMES.map((_, i) => i);
-      for (let i = this.bag.length - 1; i > 0; i--) {
-        const j = Math.floor(this.random() * (i + 1));
-        [this.bag[i], this.bag[j]] = [this.bag[j], this.bag[i]];
-      }
-    }
-    return this.bag.pop()!;
+    // NES-style one-reroll rule. Uses independent random draws rather than
+    // emulating the NES's frame-driven generator and its correlated results.
+    let kind = Math.floor(this.random() * (NAMES.length + 1));
+    if (kind === NAMES.length || kind === this.previous) kind = Math.floor(this.random() * NAMES.length);
+    this.previous = kind;
+    return kind;
   }
 
-  private spawn(): void {
-    const kind = this.next;
-    this.next = this.draw();
+  private spawn(kind?: number): void {
+    if (kind === undefined) {
+      kind = this.next;
+      this.next = this.draw();
+    }
     this.active = { kind, rotation: 0, x: Math.floor((WIDTH - SHAPES[kind].length) / 2), y: 0 };
     this.over = !this.fits(this.active);
+  }
+
+  hold(): boolean {
+    if (this.over || this.holdUsed) return false;
+    const kind = this.active.kind;
+    this.spawn(this.held);
+    this.held = kind;
+    this.holdUsed = true;
+    return true;
   }
 
   cells(piece: Piece = this.active): Point[] {
@@ -169,9 +188,11 @@ export class Game {
     }
     const cleared = target + 1;
     this.board.fill(0, 0, cleared * WIDTH);
-    this.score += LINE_POINTS[cleared] * this.level;
+    this.score += LINE_POINTS[cleared] * (this.level + 1);
     this.lines += cleared;
+    if (cleared === 4) this.tetrises++;
     this.locked++;
+    this.holdUsed = false;
     this.spawn();
   }
 }
