@@ -4,15 +4,25 @@ A small TypeScript extension that opens Tetris over Pi's terminal interface whil
 the agent keeps working. It uses Pi's existing runtime and UI, with no additional
 runtime dependencies or build step.
 
-## Play
-
-With Pi on your PATH, run this from the project directory:
+## Install
 
 ```sh
-npm start
+pi install git:github.com/superobi/pi-tetris@v1.1.0
 ```
 
-Then enter `/tetris` in Pi. Choose a starting level from 0 to 9 with the number
+Then run `/reload` in an existing Pi session, or start a new one.
+
+For development from a local clone:
+
+```sh
+pi install /absolute/path/to/pi-tetris
+```
+
+Keep the project directory in place, since Pi loads the extension from it.
+
+## Play
+
+Enter `/tetris` in Pi. Choose a starting level from 0 to 9 with the number
 keys or arrows, then press Enter or Space. The command also works while the agent is responding.
 Esc returns to the prompt and keeps your game in memory. `/tetris` reopens it
 paused; P resumes. When Pi finishes its run, the game pauses and shows
@@ -23,15 +33,6 @@ two rows per brick, with complete beveled edges and a larger next-piece preview.
 It requires at least **64 columns × 45 rows** and pauses if the pane is smaller.
 Return with Esc, then use `/tetris` to go back to the original size. Each command
 keeps its own game in memory; both share the persistent high score.
-
-To make `/tetris` available in your other projects, install this local package:
-
-```sh
-pi install /Users/a.dulac/coding/tetris
-```
-
-Then run `/reload` in an existing Pi session, or start a new session. Keep the
-project directory in place because Pi loads the extension from it.
 
 | Key | Action |
 | --- | --- |
@@ -118,9 +119,15 @@ centered titles. Compact mode places one-row half-block previews side by side.
 - Game progress lasts for the current Pi session. Restarting Pi, switching sessions,
   or reloading extensions clears it. Game state stays out of the model's context.
 
-The three runtime source files total about 28 KB. This measures source size, not
-process memory. Tested with Pi 0.84.4 (`@earendil-works/pi-coding-agent`) and Node
-22.22.2. Earlier Pi versions may need API adjustments.
+## Develop
+
+From a local clone, run the extension without installing:
+
+```sh
+pi -e ./extensions/tetris/index.ts
+```
+
+Or use `npm start`, which runs the same command.
 
 ## Verify
 
@@ -139,6 +146,10 @@ use the configured values and verify behavior at their boundaries, so adjusting
 speeds or reset counts does not require editing tests. Broad sanity checks catch
 wrong types, non-finite numbers, negative or extreme values, and inconsistent
 gravity bounds. Zero lock resets is supported.
+
+The three runtime source files total about 28 KB. This measures source size, not
+process memory. Tested with Pi 0.84.4 (`@earendil-works/pi-coding-agent`) and Node
+22.22.2. Earlier Pi versions may need API adjustments.
 
 For the landing-delay investigation, `/tetris-debug` shows the last six locks
 from your most recent game, including time since contact and its first rendered
