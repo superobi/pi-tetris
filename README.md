@@ -12,11 +12,17 @@ pi install git:github.com/superobi/pi-tetris@v1.1.0
 
 Then run `/reload` in an existing Pi session, or start a new one.
 
-For development from a local clone:
+For development from a local clone, add it to `~/.pi/agent/settings.json`:
 
-```sh
-pi install /absolute/path/to/pi-tetris
+```json
+{
+  "extensions": ["~/pi-tetris/extensions/tetris/index.ts"]
+}
 ```
 
-Keep the project directory in place, since Pi loads the extension from it.
+Or install the local path as a package:
+
+```sh
+pi install ~/pi-tetris
+```
 
